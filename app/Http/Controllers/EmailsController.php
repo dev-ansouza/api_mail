@@ -22,7 +22,7 @@ class EmailsController extends BaseController
     public function receive_emails()
     {
         //Armazena os dados da requisição
-        $dados = "boss@diamonddogs.comlink from zelda-- Type your email here --alexkid@sega.com professorwhite@saymyname.comrh@teknisa.com mario@snes SONIC@SEGA.COM darth@deatchstart.net i don't have email pedro@gmail.com.br";
+        $dados = "boss@diamonddogs.com link from zelda -- Type your email here -- alexkid@sega.com professorwhite@saymyname.com rh@teknisa.com mario@snes SONIC@SEGA.COM darth@deatchstart.net i don't have email pedro@gmail.com.br";
 
         //Se a array $emails não estiver vazia, chama o método filter que é responsável por retornar ua array de e-mails válidos
         if (!empty($dados)){
@@ -38,7 +38,6 @@ class EmailsController extends BaseController
      */
     public function filter($dados)
     {
-
         //Separa a string quando houver espaçamento
         $dados_separados = explode(" ", $dados);
 
@@ -54,16 +53,33 @@ class EmailsController extends BaseController
                 //Verifica se a array de emails não está vazia
                 if (!empty($emails)) {
 
-                    //Verifica se existe algum e-mail na array de e-mails com o mesmo dado
-                    foreach ($emails as $email){
+                    //Passa por cada posição da array $emails e verifica se existe algum email igual ao dado a ser adicionado
+                    for($i = 0; $i < count($emails); $i++){
 
-                        //Se não existir um e-mail com o mesmo dado adicionado na array, adiciona-o
-                        if ($email === $dado) {
+                        //Se o dado for igual ao e-mail, significa que o e-mail já foi adicionado
+                        if($dado === $emails[$i]) {
 
-                            //Adiciona o dado na array
-                            array_push($emails['email'], $dado);
+                            //e-mail adicionado
+                            $email_adicionado = true;
+                        } else {
+
+                            //e-mail não adicionado
+                            $email_adicionado = false;
                         }
                     }
+
+                    //Se o e-mail não foi adicionado, adiciona-o
+                    if(!$email_adicionado) {
+
+                        //Adiciona o dado na array
+                        array_push($emails, $dado);
+                    }
+
+                //Se estiver vazia adiciona o primeiro email na array
+                } else {
+
+                    //Adiciona o primeiro dado a popular a array
+                    array_push($emails, $dado);
                 }
             }
         }
