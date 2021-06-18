@@ -14,3 +14,10 @@
 $app->get('/', function () use ($app) {
     return $app->welcome();
 });
+
+//Rota para adiocionar emails
+$app->get('/emails/add', 'EmailsController@index');
+
+//Rota para enviar emails
+$app->post('/emails/send', 'EmailsController@send_emails');
+
