@@ -12,7 +12,7 @@ Laravel Lumen is a stunningly fast PHP micro-framework for building web applicat
 
 - Utilizar PHP versão >= 5.5.9
 
-- Comando necessário para atualizar as depêndencias (no diretório do app)
+- Comando necessário para atualizar as dependências (no diretório do app)
 ``` sh
 composer update
 ````
