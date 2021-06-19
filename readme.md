@@ -8,6 +8,22 @@
 
 Laravel Lumen is a stunningly fast PHP micro-framework for building web applications with expressive, elegant syntax. We believe development must be an enjoyable, creative experience to be truly fulfilling. Lumen attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as routing, database abstraction, queueing, and caching.
 
+## Execução 
+
+- Utilizar PHP versão >= 5.5.9
+
+- Comando necessário para atualizar as depêndencias (no diretório do app)
+``` sh
+composer update
+````
+
+- Utilizar o Postman para envio das requisições POST
+
+- Para criar o servidor executar o comando (no diretório do app) 
+``` sh
+php -S localhost:8000 server.php
+````
+
 ## Official Documentation
 
 Documentation for the framework can be found on the [Lumen website](http://lumen.laravel.com/docs).
