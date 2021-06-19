@@ -119,21 +119,30 @@ class EmailsController extends BaseController
      */
     public function sort($emails)
     {
+        //Define da fuso horário
+        date_default_timezone_set('America/Sao_Paulo');
 
         //Armazena a data e hora atual
-        $data = date("Y-m-d");
-        $hora = date("H:i");
+        $data_atual = date('d-m-Y');
+        $hora_atual = date("H:i");
+
+        //Modifica o formato da hora para adicioná-la no nome do arquivo txt
+        $hora_atual_explode = explode(':', $hora_atual);
+
+        //Monta a string com a data atual e a hora atual modificada
+        $data_hora_atual = $data_atual . '_' . $hora_atual_explode[0] . '_' . $hora_atual_explode[1];
+
+        //Definição do diretório de emails para salvar no arquivo de txt
+        $directory_emails = "storage/emails/emails_" . $data_hora_atual . ".txt";
 
         //Se existem e-mails...
         if (!empty($emails)) {
 
-            //Verifica se o diretório "emails" existe, se não, cria
-            if (!file_exists('../../../storage/emails')) {
-                mkdir('../../../storage/emails', 0777, true);
-            }
+            //Ordena os emails
+            natcasesort($emails);
 
             //Salva os e-mails válidos no arquivo "email.txt"
-            $emails_validos = fopen("../../../storage/emails/emails_" . $data ."/" . $hora . ".txt", "w");
+            $emails_validos = fopen($directory_emails, "w");
 
             //Salva cada e-mail válido no arquivo txt
             foreach($emails as $email){
@@ -144,8 +153,6 @@ class EmailsController extends BaseController
             fclose($emails_validos);
         };
 
-        //Retorna uma array de e-mails válidos ordenados
-        return sort($emails);
     }
 
     /**
