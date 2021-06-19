@@ -84,16 +84,19 @@ class EmailsController extends BaseController
             }
         }
 
-        //Se existem e-mails válidos...
+        //Se a array de emails não está vazia...
         if (!empty($emails)) {
 
+            //Definição do diretório de emails
+            $directory_emails = "storage/emails";
+
             //Verifica se o diretório "emails" existe, se não, cria
-            if (!file_exists('../../../storage/emails')) {
-                mkdir('../../../storage/emails', 0777, true);
+            if (!file_exists($directory_emails)) {
+                mkdir($directory_emails, 0777, true);
             }
 
             //Salva ose-mails válidos no arquivo "email.txt"
-            $emails_validos = fopen("../../../storage/emails/emails.txt", "w");
+            $emails_validos = fopen("storage/emails/email.txt", "w");
 
             //Salva cada e-mail válido no arquivo txt
             foreach($emails as $email){
@@ -106,6 +109,7 @@ class EmailsController extends BaseController
             //Chama o método para ordenação dos e-mails
             $this->sort($emails);
         }
+
     }
 
     /**
