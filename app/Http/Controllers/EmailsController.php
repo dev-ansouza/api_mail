@@ -216,14 +216,14 @@ class EmailsController extends BaseController
 
             //Verifica se o diretório "sent.log" existe, se não, cria
             if (!file_exists('storage/logs/sent.log')) {
-                fopen("storage/logs/sent.log", "w");
-                fclose("storage/logs/sent.log");
+                $sent_log = fopen("storage/logs/sent.log", "w");
+                fclose($sent_log);
             }
 
             //Verifica se o diretório "fail.log" existe, se não, cria
             if (!file_exists('storage/logs/fail.log')) {
-                fopen("storage/logs/fail.log", "w");
-                fclose("storage/logs/fail.log");
+                $fail_log = fopen("storage/logs/fail.log", "w");
+                fclose($fail_log);
             }
 
             //Passa por cada e-mail
@@ -231,11 +231,6 @@ class EmailsController extends BaseController
 
                 //Modifica a string
                 $enderecoEmail = str_replace("\r\n", "", $enderecoEmail);
-
-                //Cria uma nova instancia de email
-//                $email = new Email($enderecoEmail);
-
-//                dd($email);
 
                 //Simula randômicamente se o email foi enviado ou não
                 $email_enviado = $faker->boolean;
@@ -260,7 +255,7 @@ class EmailsController extends BaseController
                     //Se o log estiver vazio
                     if($dados_log === "") {
                         //Determina a string a ser salva no log.
-                        $dados_log = "Data e hora: " . $data_hora . "\t" . "Endereço de e-mail: " . $enderecoEmail . "\t" . "Assunto: " . $request['subject'];
+                        $dados_log = "Data e hora: " . $data_hora . "\t" . "Endereço de e-mail: " . $enderecoEmail . "\t" . "Assunto: " . $request['subject'] . "\n";
                     } else {
                         //Concatena com os dados já existente no log com a string a ser salva no log.
                         $dados_log = $dados_log . "Data e hora: " . $data_hora . "\t" . "Endereço de e-mail: " . $enderecoEmail . "\t" . "Assunto: " . $request['subject'] . "\n";
@@ -279,7 +274,7 @@ class EmailsController extends BaseController
 
                     if($dados_log === "") {
                         //Determina a string a ser salva no log.
-                        $dados_log = "Data e hora: " . $data_hora . "\t" . "Endereço de e-mail: " . $enderecoEmail . "\t" . "Assunto: " . $request['subject'];
+                        $dados_log = "Data e hora: " . $data_hora . "\t" . "Endereço de e-mail: " . $enderecoEmail . "\t" . "Assunto: " . $request['subject'] . "\n";
                     } else {
                         //Concatena com os dados já existente no log com a string a ser salva no log.
                         $dados_log = $dados_log . "Data e hora: " . $data_hora . "\t" . "Endereço de e-mail: " . $enderecoEmail . "\t" . "Assunto: " . $request['subject'] . "\n";
