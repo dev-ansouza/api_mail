@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Laravel\Lumen\Routing\Controller as BaseController;
 use Illuminate\Http\Request;
+use Faker\Factory as Faker;
 
 class EmailsController extends BaseController
 {
@@ -105,7 +106,7 @@ class EmailsController extends BaseController
             }
 
             //Salva ose-mails válidos no arquivo "email.txt"
-            $emails_validos = fopen("storage/emails/email.txt", "w");
+            $emails_validos = fopen("storage/emails/emails.txt", "w");
 
             //Salva cada e-mail válido no arquivo txt
             foreach($emails as $email){
@@ -175,90 +176,135 @@ class EmailsController extends BaseController
     public function send_emails(Request $request)
     {
 
-        //Instância a lib do Faker
-        $faker = Faker\Factory::create();
-
-        //Verifica se o diretório "logs" existe, se não, cria
-        if (!file_exists('../../../storage/logs')) {
-            mkdir('../../../storage/logs', 0777, true);
-        }
-
-        //Verifica se o diretório "sent.log" existe, se não, cria
-        if (!file_exists('../../../storage/logs/sent.log')) {
-            mkdir('../../../storage/logs/sent.log', 0777, true);
-        }
-
-        //Verifica se o diretório "fail.log" existe, se não, cria
-        if (!file_exists('../../../storage/logs/fail.log')) {
-            mkdir('../../../storage/logs/fail.log', 0777, true);
-        }
-
-        //Armazena a data e hora atual
-        $data_hora = date("Y-m-d H:i");
-
         //Armazena os dados da requisição
-        $dados = $request->all();
+        $request = $request->all();
 
-        //Armazena a quantidade de falhas e sucesso de envio de email
-        $emails_sent = '';
-        $emails_fail= '';
+        //Verifica se o subject e o body foram enviados na requisição e se não estão vazios
+        if(
+            isset($request['subject'])
+            && $request['subject'] !== ""
+            && isset($request['body'])
+            && $request['body'] !== ""
+        ) {
 
-        //Lê o dados do arquivo
-        $emails = file("../../../storage/emails/emails.txt");
-
-        //Armazena as informações dos e-mails
-        $email_info = [
-            ['emails' => count($emails)],
-            ['emails_sent' => $emails_sent],
-            ['emails_fail' => $emails_fail]
-        ];
-
-        //Passa por cada e-mail
-        foreach($emails as $enderecoEmail){
-
-            //Cria uma nova instancia de email
-            $email = new Email($enderecoEmail);
-
-            //Simula randômicamente se o email foi enviado ou não
-            $email_enviado = $faker->boolean;
-
-            //Armazena as informações do envio do e-mail;
-            $dados_emails = [
-                'hora' => $data_hora,
-                'email' => $email,
-                'assunto' => $dados['subject'],
+            //Array que armazena os seguintes dados recebidos
+            $request = [
+                'subject' => $request['subject'],
+                'body' => $request['body'],
             ];
 
-            //Incrementa na array de informações de emails
-            //Caso o email_enviado retornar true, significa que o e-mail foi enviado com sucesso, caso contrário, false...
-            if($email_enviado === true) {
-                $email_info['emails_sent']++;
+            //Define da fuso horário
+            date_default_timezone_set('America/Sao_Paulo');
 
-                //Busca os dados contidos no log de emails enviados
-                $dados_log = file_get_contents("../../../storage/logs/sent.log");
+            //Armazena a data e hora atual
+            $data_hora = date("d-m-Y H:i");
 
-                //Monta a string a ser salva no log.
-                $dados_log = $data_hora . "\t" . $email . "\t" . $dados['subject'] . "\n";
+            //Armazena a quantidade de falhas e sucesso de envio de email
+            $emails_sent = 0;
+            $emails_fail= 0;
 
-                //Atualiza o log de e-mails enviados com sucesso
-                file_put_contents("../../../logs/sent.log", $dados_log);
+            //Lê o dados do arquivo
+            $emails = file("storage/emails/emails.txt");
 
-            } else {
-                $email_info['emails_sfail']++;
+            //Instância o Fzaninotto/Faker
+            $faker = Faker::create();
 
-                //Busca os dados contidos no log de emails com falha no envio
-                $dados_log = file_get_contents("../../../storage/logs/sent.log");
-
-                //Monta a string a ser salva no log.
-                $dados_log = $data_hora . "\t" . $email . "\t" . $dados['subject'] . "\n";
-
-                //Atualiza o log de e-mails enviados com falha no envio
-                file_put_contents("../../../logs/fail.log", $dados_log);
+            //Verifica se o diretório "logs" existe, se não, cria
+            if (!file_exists('storage/logs')) {
+                mkdir('storage/logs', 0777, true);
             }
-        }
 
-        //Retorna os resultados JSON
-        return $dados_emails = json_decode(json_encode($dados_emails), true);
+            //Verifica se o diretório "sent.log" existe, se não, cria
+            if (!file_exists('storage/logs/sent.log')) {
+                fopen("storage/logs/sent.log", "w");
+                fclose("storage/logs/sent.log");
+            }
+
+            //Verifica se o diretório "fail.log" existe, se não, cria
+            if (!file_exists('storage/logs/fail.log')) {
+                fopen("storage/logs/fail.log", "w");
+                fclose("storage/logs/fail.log");
+            }
+
+            //Passa por cada e-mail
+            foreach($emails as $enderecoEmail){
+
+                //Modifica a string
+                $enderecoEmail = str_replace("\r\n", "", $enderecoEmail);
+
+                //Cria uma nova instancia de email
+//                $email = new Email($enderecoEmail);
+
+//                dd($email);
+
+                //Simula randômicamente se o email foi enviado ou não
+                $email_enviado = $faker->boolean;
+
+                //Armazena as informações do envio do e-mail;
+                $dados_emails = [
+                    'hora' => $data_hora,
+                    'email' => $enderecoEmail,
+                    'assunto' => $request['subject'],
+                ];
+
+                //Incrementa na array de informações de emails
+                //Caso o email_enviado retornar true, significa que o e-mail foi enviado com sucesso, caso contrário, false...
+                if($email_enviado === true) {
+
+                    //Incrementa na variável que armazena a quantidade de emails enviados com sucesso
+                    $emails_sent++;
+
+                    //Busca os dados contidos no log de emails enviados
+                    $dados_log = file_get_contents("storage/logs/sent.log");
+
+                    //Se o log estiver vazio
+                    if($dados_log === "") {
+                        //Determina a string a ser salva no log.
+                        $dados_log = "Data e hora: " . $data_hora . "\t" . "Endereço de e-mail: " . $enderecoEmail . "\t" . "Assunto: " . $request['subject'];
+                    } else {
+                        //Concatena com os dados já existente no log com a string a ser salva no log.
+                        $dados_log = $dados_log . "Data e hora: " . $data_hora . "\t" . "Endereço de e-mail: " . $enderecoEmail . "\t" . "Assunto: " . $request['subject'] . "\n";
+                    }
+
+                    //Atualiza o log de e-mails enviados com sucesso
+                    file_put_contents("storage/logs/sent.log", $dados_log);
+
+                } else {
+
+                    //Incrementa na variável que armazena a quantidade de emails com falha de envio
+                    $emails_fail++;
+
+                    //Busca os dados contidos no log de emails com falha no envio
+                    $dados_log = file_get_contents("storage/logs/fail.log");
+
+                    if($dados_log === "") {
+                        //Determina a string a ser salva no log.
+                        $dados_log = "Data e hora: " . $data_hora . "\t" . "Endereço de e-mail: " . $enderecoEmail . "\t" . "Assunto: " . $request['subject'];
+                    } else {
+                        //Concatena com os dados já existente no log com a string a ser salva no log.
+                        $dados_log = $dados_log . "Data e hora: " . $data_hora . "\t" . "Endereço de e-mail: " . $enderecoEmail . "\t" . "Assunto: " . $request['subject'] . "\n";
+                    }
+
+                    //Atualiza o log de e-mails enviados com falha no envio
+                    file_put_contents("storage/logs/fail.log", $dados_log);
+                }
+            }
+
+            //Armazena as informações gerais relacionadas aos emails e seus envios
+            $email_info = [
+                'emails' => count($emails),
+                'emails_sent' => $emails_sent,
+                'emails_fail' => $emails_fail
+            ];
+
+            //Retorna os resultados JSON para o cliente
+            print_r($email_info = json_decode(json_encode($email_info), true));
+
+        } else {
+
+            print_r("Verifique se o subject e o body foram enviados!");
+            return;
+        }
 
     }
 
