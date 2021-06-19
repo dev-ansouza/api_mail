@@ -16,7 +16,7 @@ $app->get('/', function () use ($app) {
 });
 
 //Rota para adiocionar emails
-$app->get('/emails/add', 'EmailsController@index');
+$app->post('/emails/add', 'EmailsController@receive_emails');
 
 //Rota para enviar emails
 $app->post('/emails/send', 'EmailsController@send_emails');

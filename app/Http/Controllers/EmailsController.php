@@ -3,31 +3,40 @@
 namespace App\Http\Controllers;
 
 use Laravel\Lumen\Routing\Controller as BaseController;
+use Illuminate\Http\Request;
 
 class EmailsController extends BaseController
 {
 
     /**
-     * Método inicial
-     */
-    public function index()
-    {
-        //Chama o método que recebe os emails
-        $this->receive_emails();
-    }
-
-    /**
      * Método que recebe os emails
+     *
+     * @param Request $request
     */
-    public function receive_emails()
+    public function receive_emails(Request $request)
     {
-        //Armazena os dados da requisição
-        $dados = "boss@diamonddogs.com link from zelda -- Type your email here -- alexkid@sega.com professorwhite@saymyname.com rh@teknisa.com mario@snes SONIC@SEGA.COM darth@deatchstart.net i don't have email pedro@gmail.com.br";
 
-        //Se a array $emails não estiver vazia, chama o método filter que é responsável por retornar ua array de e-mails válidos
-        if (!empty($dados)){
-            $emails = $this->filter($dados);
-        };
+        //Armazena os dados da requisição
+        $request = $request->all();
+
+        //Se foi enviados dados na requisição
+        if(!empty($request)) {
+
+            //Armazena os dados da requisição
+            $dados = $request['emails'];
+
+            //Se a array $emails não estiver vazia, chama o método filter que é responsável por retornar ua array de e-mails válidos
+            if (!empty($dados)){
+
+                //Chama o método responsável por filtrar os dados
+                $this->filter($dados);
+            };
+        } else {
+
+            //Retorna para o usuário
+            print_r("Não foram enviados dados na requisição!");
+
+        }
 
     }
 
@@ -151,7 +160,10 @@ class EmailsController extends BaseController
 
             //Fecha o arquivo
             fclose($emails_validos);
+
         };
+
+        print_r("Emails cadastrados com sucesso!");
 
     }
 
